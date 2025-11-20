@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { getWeatherByCity } from './services/weatherService'
-import './App.css'
+import './index.css'
+
+
 
 function App() {
   const [city, setCity] = useState('')
@@ -27,15 +29,15 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-agro-dark flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header Simples */}
+    
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-agro-yellow mb-2">🌾 Agro M2</h1>
-          <p className="text-agro-light">Clima para o Agro</p>
+          <h1 className="text-4xl font-bold text-agro-yellow mb-2"> Agro M²</h1>
+          <p className="text-agro-light">Clima+Agro</p>
         </div>
 
-        {/* Formulário */}
+ 
         <form onSubmit={handleSearch} className="mb-6">
           <div className="flex gap-2">
             <input
@@ -56,14 +58,14 @@ function App() {
           </div>
         </form>
 
-        {/* Erro */}
+    
         {error && (
           <div className="mb-4 p-3 bg-red-500 text-white rounded text-center">
             {error}
           </div>
         )}
 
-        {/* Resultado */}
+   
         {weather && (
           <div className="bg-agro-light rounded-lg p-6 text-agro-dark">
             <h2 className="text-2xl font-bold mb-4">{weather.name}</h2>
@@ -92,9 +94,11 @@ function App() {
 
             <p className="text-center mt-4 text-gray-700 capitalize">{weather.weather[0].description}</p>
           </div>
+
+          
         )}
 
-        {/* Footer */}
+    
         {!weather && !error && (
           <p className="text-center text-agro-light text-sm mt-8">
             Digite uma cidade para começar

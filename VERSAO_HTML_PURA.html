@@ -6,306 +6,315 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clima para o Agro M2</title>
-  <style>
-    /* ============ CSS PARTE 1: ESTILOS GLOBAIS ============ */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: #132116;      /* Fundo verde escuro */
-      color: #E9E9E9;           /* Texto cinza claro */
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    /* ============ CSS PARTE 2: CONTAINER PRINCIPAL ============ */
-    .container {
-      background: rgba(19, 33, 22, 0.9);
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 500px;
-      width: 100%;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    /* ============ CSS PARTE 3: CABEÇALHO ============ */
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .logo {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #ECB417;           /* Amarelo */
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: #E9E9E9;
-    }
-
-    /* ============ CSS PARTE 4: FORMULÁRIO ============ */
-    .search-form {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .search-form input {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      color: #191919;
-    }
-
-    .search-form button {
-      background: #ECB417;      /* Botão amarelo */
-      color: #191919;           /* Texto preto */
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
-
-    .search-form button:hover {
-      background: #ffd84a;      /* Amarelo mais claro no hover */
-    }
-
-    .search-form button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* ============ CSS PARTE 5: RESULTADO ============ */
-    .result {
-      background: #E9E9E9;      /* Cinza claro */
-      color: #191919;           /* Texto preto */
-      padding: 20px;
-      border-radius: 8px;
-      display: none;            /* Escondido por padrão */
-    }
-
-    .result.show {
-      display: block;           /* Mostrar quando ativado */
-    }
-
-    .city-name {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    .weather-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .weather-item {
-      text-align: center;
-      padding: 10px;
-      background: rgba(19, 33, 22, 0.1);
-      border-radius: 6px;
-    }
-
-    .weather-item .label {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 5px;
-    }
-
-    .weather-item .value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #ECB417;           /* Amarelo para destaques */
-    }
-
-    .description {
-      text-align: center;
-      font-size: 1rem;
-      color: #666;
-      margin-top: 10px;
-      text-transform: capitalize;
-    }
-
-    /* ============ CSS PARTE 6: ERRO ============ */
-    .error {
-      background: #ff4444;
-      color: white;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .error.show {
-      display: block;
-    }
-
-    /* ============ CSS PARTE 7: MENSAGEM ============ */
-    .message {
-      text-align: center;
-      color: #E9E9E9;
-      margin-top: 20px;
-      font-size: 0.9rem;
-    }
-
-    /* ============ CSS PARTE 8: RESPONSIVIDADE ============ */
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-      }
-
-      .weather-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- CABEÇALHO -->
-    <div class="header">
-      <div class="logo">🌾 Agro M2</div>
-      <div class="subtitle">Clima para o Agro</div>
-    </div>
-
-    <!-- FORMULÁRIO DE BUSCA -->
-    <form class="search-form" id="searchForm">
-      <input 
-        type="text" 
-        id="cityInput" 
-        placeholder="Digite a cidade..." 
-        required
-      >
-      <button type="submit" id="searchBtn">Buscar</button>
-    </form>
-
-    <!-- MENSAGEM DE ERRO -->
-    <div class="error" id="error"></div>
-
-    <!-- RESULTADO -->
-    <div class="result" id="result">
-      <div class="city-name" id="cityName"></div>
-      
-      <div class="weather-grid">
-        <div class="weather-item">
-          <div class="label">Temperatura</div>
-          <div class="value" id="temp">--°C</div>
-        </div>
-
-        <div class="weather-item">
-          <div class="label">Sensação</div>
-          <div class="value" id="feelsLike">--°C</div>
-        </div>
-
-        <div class="weather-item">
-          <div class="label">Umidade</div>
-          <div class="value" id="humidity">--%</div>
-        </div>
-
-        <div class="weather-item">
-          <div class="label">Vento</div>
-          <div class="value" id="wind">-- m/s</div>
-        </div>
-      </div>
-
-      <div class="description" id="description"></div>
-    </div>
-
-    <!-- MENSAGEM INICIAL -->
-    <div class="message" id="message">
-      Digite uma cidade para começar
-    </div>
-  </div>
-
-  <!-- ============ JAVASCRIPT PARTE: LÓGICA ============ -->
-  <script>
-    // Chave da API (coloque a sua aqui)
-    const API_KEY = '07368b14adf09cb8f2f452999e2d0cc4';
-    const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
-
-    // Elementos do DOM
-    const searchForm = document.getElementById('searchForm');
-    const cityInput = document.getElementById('cityInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const result = document.getElementById('result');
-    const error = document.getElementById('error');
-    const message = document.getElementById('message');
-
-    // Quando o formulário é submetido
-    searchForm.addEventListener('submit', async (e) => {
-      e.preventDefault(); // Evitar recarregar a página
-      
-      const city = cityInput.value.trim();
-      
-      if (!city) return;
-
-      // Desabilitar botão e mostrar "Buscando..."
-      searchBtn.disabled = true;
-      searchBtn.textContent = 'Buscando...';
-      error.classList.remove('show');
-      result.classList.remove('show');
-      message.classList.add('hide');
-
-      try {
-        // Fazer a requisição para a API
-        const response = await fetch(
-          `${API_URL}?q=${city}&appid=${API_KEY}&units=metric&lang=pt_br`
-        );
-
-        if (!response.ok) {
-          throw new Error('Cidade não encontrada');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima para o Agro M2</title>
+    <style>
+        /* ============ CSS PARTE 1: ESTILOS GLOBAIS ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        const data = await response.json();
+        body {
+            background: #132116;
+            /* Fundo verde escuro */
+            color: #E9E9E9;
+            /* Texto cinza claro */
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        // Preencher os dados na página
-        document.getElementById('cityName').textContent = data.name;
-        document.getElementById('temp').textContent = Math.round(data.main.temp) + '°C';
-        document.getElementById('feelsLike').textContent = Math.round(data.main.feels_like) + '°C';
-        document.getElementById('humidity').textContent = data.main.humidity + '%';
-        document.getElementById('wind').textContent = Math.round(data.wind.speed) + ' m/s';
-        document.getElementById('description').textContent = data.weather[0].description;
+        /* ============ CSS PARTE 2: CONTAINER PRINCIPAL ============ */
+        .container {
+            background: rgba(19, 33, 22, 0.9);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
 
-        // Mostrar resultado
-        result.classList.add('show');
-        message.style.display = 'none';
+        /* ============ CSS PARTE 3: CABEÇALHO ============ */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-      } catch (err) {
-        // Mostrar erro
-        error.textContent = err.message;
-        error.classList.add('show');
-      } finally {
-        // Reabilitar botão
-        searchBtn.disabled = false;
-        searchBtn.textContent = 'Buscar';
-        cityInput.value = '';
-      }
-    });
-  </script>
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ECB417;
+            /* Amarelo */
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #E9E9E9;
+        }
+
+        /* ============ CSS PARTE 4: FORMULÁRIO ============ */
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #191919;
+        }
+
+        .search-form button {
+            background: #ECB417;
+            /* Botão amarelo */
+            color: #191919;
+            /* Texto preto */
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .search-form button:hover {
+            background: #ffd84a;
+            /* Amarelo mais claro no hover */
+        }
+
+        .search-form button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ============ CSS PARTE 5: RESULTADO ============ */
+        .result {
+            background: #E9E9E9;
+            /* Cinza claro */
+            color: #191919;
+            /* Texto preto */
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            /* Escondido por padrão */
+        }
+
+        .result.show {
+            display: block;
+            /* Mostrar quando ativado */
+        }
+
+        .city-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .weather-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(19, 33, 22, 0.1);
+            border-radius: 6px;
+        }
+
+        .weather-item .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .weather-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ECB417;
+            /* Amarelo para destaques */
+        }
+
+        .description {
+            text-align: center;
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+            text-transform: capitalize;
+        }
+
+        /* ============ CSS PARTE 6: ERRO ============ */
+        .error {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        /* ============ CSS PARTE 7: MENSAGEM ============ */
+        .message {
+            text-align: center;
+            color: #E9E9E9;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* ============ CSS PARTE 8: RESPONSIVIDADE ============ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- CABEÇALHO -->
+        <div class="header">
+            <div class="logo">🌾 Agro M2</div>
+            <div class="subtitle">Clima para o Agro</div>
+        </div>
+
+        <!-- FORMULÁRIO DE BUSCA -->
+        <form class="search-form" id="searchForm">
+            <input type="text" id="cityInput" placeholder="Digite a cidade..." required>
+            <button type="submit" id="searchBtn">Buscar</button>
+        </form>
+
+        <!-- MENSAGEM DE ERRO -->
+        <div class="error" id="error"></div>
+
+        <!-- RESULTADO -->
+        <div class="result" id="result">
+            <div class="city-name" id="cityName"></div>
+
+            <div class="weather-grid">
+                <div class="weather-item">
+                    <div class="label">Temperatura</div>
+                    <div class="value" id="temp">--°C</div>
+                </div>
+
+                <div class="weather-item">
+                    <div class="label">Sensação</div>
+                    <div class="value" id="feelsLike">--°C</div>
+                </div>
+
+                <div class="weather-item">
+                    <div class="label">Umidade</div>
+                    <div class="value" id="humidity">--%</div>
+                </div>
+
+                <div class="weather-item">
+                    <div class="label">Vento</div>
+                    <div class="value" id="wind">-- m/s</div>
+                </div>
+            </div>
+
+            <div class="description" id="description"></div>
+        </div>
+
+        <!-- MENSAGEM INICIAL -->
+        <div class="message" id="message">
+            Digite uma cidade para começar
+        </div>
+    </div>
+
+    <!-- ============ JAVASCRIPT PARTE: LÓGICA ============ -->
+    <script>
+        // Chave da API (coloque a sua aqui)
+        const API_KEY = '07368b14adf09cb8f2f452999e2d0cc4';
+        const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+        // Elementos do DOM
+        const searchForm = document.getElementById('searchForm');
+        const cityInput = document.getElementById('cityInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const result = document.getElementById('result');
+        const error = document.getElementById('error');
+        const message = document.getElementById('message');
+
+        // Quando o formulário é submetido
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evitar recarregar a página
+
+            const city = cityInput.value.trim();
+
+            if (!city) return;
+
+            // Desabilitar botão e mostrar "Buscando..."
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Buscando...';
+            error.classList.remove('show');
+            result.classList.remove('show');
+            message.classList.add('hide');
+
+            try {
+                // Fazer a requisição para a API
+                const response = await fetch(
+                    `${API_URL}?q=${city}&appid=${API_KEY}&units=metric&lang=pt_br`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Cidade não encontrada');
+                }
+
+                const data = await response.json();
+
+                // Preencher os dados na página
+                document.getElementById('cityName').textContent = data.name;
+                document.getElementById('temp').textContent = Math.round(data.main.temp) + '°C';
+                document.getElementById('feelsLike').textContent = Math.round(data.main.feels_like) + '°C';
+                document.getElementById('humidity').textContent = data.main.humidity + '%';
+                document.getElementById('wind').textContent = Math.round(data.wind.speed) + ' m/s';
+                document.getElementById('description').textContent = data.weather[0].description;
+
+                // Mostrar resultado
+                result.classList.add('show');
+                message.style.display = 'none';
+
+            } catch (err) {
+                // Mostrar erro
+                error.textContent = err.message;
+                error.classList.add('show');
+            } finally {
+                // Reabilitar botão
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Buscar';
+                cityInput.value = '';
+            }
+        });
+    </script>
 </body>
+
 </html>
