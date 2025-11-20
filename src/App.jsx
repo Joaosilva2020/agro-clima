@@ -1,26 +1,24 @@
 import { useState } from 'react'
-import { Header } from './components/Header'
-import { SearchBox } from './components/SearchBox'
-import { WeatherCard } from './components/WeatherCard'
-import { ErrorMessage } from './components/ErrorMessage'
 import { getWeatherByCity } from './services/weatherService'
 import './App.css'
 
 function App() {
-  const [weatherData, setWeatherData] = useState(null)
+  const [city, setCity] = useState('')
+  const [weather, setWeather] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [searchedCity, setSearchedCity] = useState('')
 
-  const handleSearch = async (city) => {
+  const handleSearch = async (e) => {
+    e.preventDefault()
+    if (!city.trim()) return
+
     setLoading(true)
     setError(null)
-    setWeatherData(null)
+    setWeather(null)
 
     try {
       const data = await getWeatherByCity(city)
-      setWeatherData(data)
-      setSearchedCity(city)
+      setWeather(data)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -29,20 +27,80 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-agro-dark via-agro-dark/90 to-agro-dark/80">
-      <Header />
-      
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <SearchBox onSearch={handleSearch} loading={loading} />
-        
-        <ErrorMessage message={error} />
-        
-        <WeatherCard data={weatherData} city={searchedCity} />
-      </main>
+    <div className="min-h-screen bg-agro-dark flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header Simples */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-agro-yellow mb-2">🌾 Agro M2</h1>
+          <p className="text-agro-light">Clima para o Agro</p>
+        </div>
 
-      <footer className="bg-agro-dark/50 text-center py-6 mt-12 text-agro-light">
-        <p className="text-sm">© 2025 Agro M2 - Clima para o Agro. Desenvolvido com React + Tailwind</p>
-      </footer>
+        {/* Formulário */}
+        <form onSubmit={handleSearch} className="mb-6">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Digite a cidade..."
+              className="flex-1 px-4 py-2 rounded text-agro-dark focus:outline-none"
+              disabled={loading}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-agro-yellow text-agro-dark font-bold rounded hover:bg-yellow-500 disabled:opacity-50"
+            >
+              {loading ? '...' : 'Buscar'}
+            </button>
+          </div>
+        </form>
+
+        {/* Erro */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-500 text-white rounded text-center">
+            {error}
+          </div>
+        )}
+
+        {/* Resultado */}
+        {weather && (
+          <div className="bg-agro-light rounded-lg p-6 text-agro-dark">
+            <h2 className="text-2xl font-bold mb-4">{weather.name}</h2>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Temperatura</p>
+                <p className="text-3xl font-bold text-agro-yellow">{Math.round(weather.main.temp)}°C</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-600">Sensação</p>
+                <p className="text-3xl font-bold">{Math.round(weather.main.feels_like)}°C</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-600">Umidade</p>
+                <p className="text-2xl font-bold">{weather.main.humidity}%</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-600">Vento</p>
+                <p className="text-2xl font-bold">{Math.round(weather.wind.speed)} m/s</p>
+              </div>
+            </div>
+
+            <p className="text-center mt-4 text-gray-700 capitalize">{weather.weather[0].description}</p>
+          </div>
+        )}
+
+        {/* Footer */}
+        {!weather && !error && (
+          <p className="text-center text-agro-light text-sm mt-8">
+            Digite uma cidade para começar
+          </p>
+        )}
+      </div>
     </div>
   )
 }
