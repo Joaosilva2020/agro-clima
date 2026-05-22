@@ -2,6 +2,9 @@
 
 Aplicação simples de consulta de clima com React e API OpenWeather.
 
+hospedado em: netlify
+para visualizar clique aqui : https://reliable-gecko-9cd3de.netlify.app/
+
 ## 📥 Instalação e Execução
 
 ### 1. Clonar o repositório
